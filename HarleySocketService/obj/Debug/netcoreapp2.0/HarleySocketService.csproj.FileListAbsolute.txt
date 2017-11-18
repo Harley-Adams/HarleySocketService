@@ -1,0 +1,11 @@
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\bin\Debug\netcoreapp2.0\HarleySocketService.deps.json
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\bin\Debug\netcoreapp2.0\HarleySocketService.runtimeconfig.json
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\bin\Debug\netcoreapp2.0\HarleySocketService.runtimeconfig.dev.json
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\bin\Debug\netcoreapp2.0\HarleySocketService.dll
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\obj\Debug\netcoreapp2.0\HarleySocketService.csprojResolveAssemblyReference.cache
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\obj\Debug\netcoreapp2.0\HarleySocketService.csproj.CoreCompileInputs.cache
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\obj\Debug\netcoreapp2.0\HarleySocketService.AssemblyInfoInputs.cache
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\obj\Debug\netcoreapp2.0\HarleySocketService.AssemblyInfo.cs
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\bin\Debug\netcoreapp2.0\HarleySocketService.pdb
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\obj\Debug\netcoreapp2.0\HarleySocketService.dll
+C:\Users\hadams\Documents\GitHub\HarleySocketService\HarleySocketService\obj\Debug\netcoreapp2.0\HarleySocketService.pdb
