@@ -63,17 +63,25 @@ namespace HarleySocketService
 		private async Task Chat(HttpContext context, WebSocket webSocket)
 		{
 			var buffer = new byte[1024 * 4];
-			WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
+			ClientConnections.Add(webSocket);
+
+			// Send a welcome message
 			await webSocket.SendAsync(new ArraySegment<byte>(
 				Encoding.UTF8.GetBytes("Welcome to HarleySocketService")),
 				WebSocketMessageType.Text, true, CancellationToken.None);
 
-			ClientConnections.Add(webSocket);
+			WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
 			while (!result.CloseStatus.HasValue)
 			{
 				foreach(var clientSocket in ClientConnections)
 				{
+					if(clientSocket.CloseStatus.HasValue)
+					{
+						await clientSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+					}
+
 					await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
 				}
 
