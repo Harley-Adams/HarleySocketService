@@ -42,7 +42,8 @@ namespace HarleySocketService
 				}
 				else
 				{
-					await context.Response.WriteAsync("Hello World! We have " + ClientConnections.Count + " connections");
+					await context.Response.WriteAsync("Hello World! Resetting connections");
+					ClientConnections.Clear();
 				}
 			});
         }
