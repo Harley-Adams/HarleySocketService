@@ -19,8 +19,8 @@ namespace HarleySocketService
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-			//services.AddSingleton<ChatSocketManager>();
-        }
+			services.AddSingleton<ChatSocketManager>();
+		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -31,64 +31,13 @@ namespace HarleySocketService
             }
 
 			app.UseWebSockets();
-			// add use middleware for chatsocket manager middleware
+			app.UseMiddleware<ChatSocketMiddleware>();
 
 			app.Run(async (context) =>
             {
-				if(context.WebSockets.IsWebSocketRequest)
-				{
-					WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-					await Chat(context, webSocket);
-				}
-				else
-				{
-					await context.Response.WriteAsync("Hello World! Resetting connections");
+					await context.Response.WriteAsync("Hello World! Use the ?reset query param to drop all current websocket connections if run out of azure connections");
 					ClientConnections.Clear();
-				}
 			});
         }
-
-		private async Task Echo(HttpContext context, WebSocket webSocket)
-		{
-			var buffer = new byte[1024 * 4];
-			WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-			while (!result.CloseStatus.HasValue)
-			{
-				await webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
-
-				result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-			}
-			await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
-		}
-
-		private async Task Chat(HttpContext context, WebSocket webSocket)
-		{
-			var buffer = new byte[1024 * 4];
-
-			ClientConnections.Add(webSocket);
-
-			// Send a welcome message
-			await webSocket.SendAsync(new ArraySegment<byte>(
-				Encoding.UTF8.GetBytes("Welcome to HarleySocketService")),
-				WebSocketMessageType.Text, true, CancellationToken.None);
-
-			WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-
-			while (!result.CloseStatus.HasValue)
-			{
-				foreach(var clientSocket in ClientConnections)
-				{
-					if(clientSocket.CloseStatus.HasValue)
-					{
-						await clientSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
-					}
-
-					await clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
-				}
-
-				result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-			}
-			await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
-		}
 	}
 }

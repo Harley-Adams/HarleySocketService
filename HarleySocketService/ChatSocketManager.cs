@@ -11,11 +11,32 @@ namespace HarleySocketService
 {
 	public class ChatSocketManager
 	{
-		private ConcurrentDictionary<string, WebSocket> SocketClients = new ConcurrentDictionary<string, WebSocket>();
+		private static ConcurrentDictionary<string, WebSocket> SocketClients = new ConcurrentDictionary<string, WebSocket>();
 
-		public void AddSocket(WebSocket socket)
+		public string AddSocket(WebSocket socket)
 		{
-			SocketClients.TryAdd(Guid.NewGuid().ToString(), socket);
+			var id = Guid.NewGuid().ToString();
+			SocketClients.TryAdd(id, socket);
+
+			return id;
+		}
+
+		public ConcurrentDictionary<string, WebSocket> GetAllSockets()
+		{
+			return SocketClients;
+		}
+
+		public string GetId(WebSocket socket)
+		{
+			return SocketClients.FirstOrDefault(p => p.Value == socket).Key;
+		}
+
+		public async Task RemoveAllSockets()
+		{
+			foreach(var socket in SocketClients)
+			{
+				await RemoveSocketAsync(socket.Key);
+			}
 		}
 
 		public async Task RemoveSocketAsync(string id)
