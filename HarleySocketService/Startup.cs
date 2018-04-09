@@ -32,8 +32,9 @@ namespace HarleySocketService
 
 			app.UseWebSockets();
 			app.UseMiddleware<ChatSocketMiddleware>();
+            app.UseMiddleware<GameSocketMiddleware>();
 
-			app.Run(async (context) =>
+            app.Run(async (context) =>
             {
 					await context.Response.WriteAsync("Hello World! Use the ?reset query param to drop all current websocket connections if run out of azure connections");
 					ClientConnections.Clear();

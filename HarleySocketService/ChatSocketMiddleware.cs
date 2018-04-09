@@ -13,7 +13,7 @@ namespace HarleySocketService
     {
 		private readonly RequestDelegate Next;
 		private readonly ChatSocketManager SocketManager;
-
+        
 		public ChatSocketMiddleware(ChatSocketManager socketManager, RequestDelegate next)
 		{
 			SocketManager = socketManager;
@@ -22,7 +22,12 @@ namespace HarleySocketService
 
 		public async Task Invoke(HttpContext context)
 		{
-			if(context.Request.Query.ContainsKey("reset"))
+            if (!context.Request.Query.ContainsKey("chat"))
+            {
+                await Next.Invoke(context);
+                return;
+            }
+            if (context.Request.Query.ContainsKey("reset"))
 			{
 				await SocketManager.RemoveAllSockets();
 				await Next.Invoke(context);
