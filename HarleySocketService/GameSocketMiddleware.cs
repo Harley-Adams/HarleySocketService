@@ -1,6 +1,8 @@
 ﻿using HarleySocketService.PaperScissorsRock;
+using HarleySocketService.PaperScissorsRock.wiremodels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,16 +63,27 @@ namespace HarleySocketService
                 userId = success ? stringValues.First() : Guid.NewGuid().ToString();
             }
 
-            if(userId == null)
+            if (userId == null)
             {
                 userId = Guid.NewGuid().ToString();
             }
 
             var socket = await context.WebSockets.AcceptWebSocketAsync();
+            var playerClient = new PlayerClient(userId, socket);
+
+            if (WaitingPlayers.Count == 0)
+            {
+                await AddPlayerToWaitList(playerClient);
+            }
+            else
+            {
+                var otherPlayer = WaitingPlayers.FirstOrDefault();
+                await StartMatch(otherPlayer, playerClient);
+            }
+
             await Receive(socket, async (result, buffer) =>
             {
                 var game = ActiveGames.FirstOrDefault(g => g.GetPlayerIds().Contains(userId));
-
 
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
@@ -78,36 +91,50 @@ namespace HarleySocketService
                     {
                         await game.EndGameAsync();
                     }
+
                     return;
                 }
 
-                if(game == null)
+                if (game == null)
                 {
-                    if(WaitingPlayers.Count > 0)
+                    if (!WaitingPlayers.Contains(playerClient))
                     {
-                        var playerOne = WaitingPlayers.FirstOrDefault();
-                        var newGame = new GameInstance(playerOne, new PlayerClient(userId, socket));
-                        WaitingPlayers.Remove(playerOne);
-
-                        ActiveGames.Add(newGame);
-                        await newGame.BroadcastGameStateAsync("test");
-
-                        return;
+                        WaitingPlayers.Add(playerClient);
                     }
-                    else
-                    {
-                        WaitingPlayers.Add(new PlayerClient(userId, socket));
-
-                        return;
-                    }
+                    return;
                 }
 
-                game.RecievePlayerUpdate(userId, PlayerChoiceEnum.Paper);
+                var bytesAsString = Encoding.UTF8.GetString(buffer);
+                var playerChoice = JsonConvert.DeserializeObject<PaperScissorsRockGameChoice>(bytesAsString);
 
-                await game.BroadcastGameStateAsync("game state placeholder");
-                //var responseString = Encoding.ASCII.GetString(buffer, 0, result.Count);
-                //await SocketManager.SendMessageToAll(responseString);
+                game.RecievePlayerUpdate(userId, playerChoice.choice);
+
+                await game.UpdatePlayersWithGameState();
             });
+        }
+
+        private async Task AddPlayerToWaitList(PlayerClient player)
+        {
+            WaitingPlayers.Add(player);
+
+            var gameStateUpdate = new PaperScissorsRockGameUpdate()
+            {
+                timeStamp = DateTime.UtcNow.Ticks,
+                gameState = "lobby"
+            };
+
+            await player.SendMessageAsync(JsonConvert.SerializeObject(gameStateUpdate));
+        }
+
+        private async Task StartMatch(PlayerClient playerOne, PlayerClient playerTwo)
+        {
+            var newGame = new GameInstance(playerOne, playerTwo);
+            WaitingPlayers.Remove(playerOne);
+
+            ActiveGames.Add(newGame);
+
+            await newGame.UpdatePlayersWithGameState();
+
         }
 
         private async Task Receive(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)

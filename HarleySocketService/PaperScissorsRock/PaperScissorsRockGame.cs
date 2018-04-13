@@ -10,25 +10,24 @@ namespace HarleySocketService.PaperScissorsRock
         PaperScissorsRockPlayer PlayerOne;
         PaperScissorsRockPlayer PlayerTwo;
 
+        public PaperScissorsRockGame(string playerOneId, string playerTwoId)
+        {
+            PlayerOne = new PaperScissorsRockPlayer() { Id = playerOneId };
+            PlayerTwo = new PaperScissorsRockPlayer() { Id = playerTwoId };
+        }
+
         public void RecordMove(string playerId, PlayerChoiceEnum choice)
         {
             if(playerId == PlayerOne.Id)
             {
                 PlayerOne.Choice = choice;
                 PlayerOne.HasPicked = true;
-                return;
             }
-            else if (playerId == PlayerOne.Id)
+            else if (playerId == PlayerTwo.Id)
             {
                 PlayerTwo.Choice = choice;
                 PlayerTwo.HasPicked = true;
-                return;
             }
-        }
-
-        public bool IsRoundComplete()
-        {
-            return PlayerOne.HasPicked && PlayerTwo.HasPicked;
         }
 
         public string GetWinnerId()
@@ -48,11 +47,11 @@ namespace HarleySocketService.PaperScissorsRock
 
             if(didPlayerOneWin && !didPlayerTwoWin)
             {
-                return PlayerOne.Id;
+                return "Winner: " + PlayerOne.Id;
             }
             else if(didPlayerTwoWin && !didPlayerOneWin)
             {
-                return PlayerTwo.Id;
+                return "Winner: " + PlayerTwo.Id;
             }
 
             return "Error";
@@ -76,10 +75,19 @@ namespace HarleySocketService.PaperScissorsRock
             return false;
         }
 
+        public Dictionary<string, int> GetScores()
+        {
+            return new Dictionary<string, int>()
+            {
+                {PlayerOne.Id, PlayerOne.Score },
+                {PlayerTwo.Id, PlayerTwo.Score }
+            };
+        }
+
         public void ResetGameState()
         {
-            PlayerOne.HasPicked = true;
-            PlayerTwo.HasPicked = true;
+            PlayerOne.HasPicked = false;
+            PlayerTwo.HasPicked = false;
         }
     }
 }

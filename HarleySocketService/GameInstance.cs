@@ -1,4 +1,6 @@
 ﻿using HarleySocketService.PaperScissorsRock;
+using HarleySocketService.PaperScissorsRock.wiremodels;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,7 +18,7 @@ namespace HarleySocketService
 
         public GameInstance(PlayerClient playerOne, PlayerClient playerTwo)
         {
-            GameState = new PaperScissorsRockGame();
+            GameState = new PaperScissorsRockGame(playerOne.GetId(), playerTwo.GetId());
             PlayerClients = new ConcurrentDictionary<string, PlayerClient>();
             PlayerClients.TryAdd(playerOne.GetId(), playerOne);
             PlayerClients.TryAdd(playerTwo.GetId(), playerTwo);
@@ -33,30 +35,29 @@ namespace HarleySocketService
             PlayerClient client;
             var found = PlayerClients.TryGetValue(id, out client);
 
-            if(found)
+            if (found)
             {
                 GameState.RecordMove(id, Choice);
-
-                if (GameState.IsRoundComplete())
-                {
-                    GameState.GetWinnerId();
-                }
             }
         }
 
-        public async Task BroadcastGameStateAsync(string message)
+        public async Task UpdatePlayersWithGameState()
         {
-            foreach(var player in PlayerClients)
+            var gameStateUpdate = new PaperScissorsRockGameUpdate()
             {
-                await player.Value.SendMessageAsync(message);
-            }
+                timeStamp = DateTime.UtcNow.Ticks,
+                gameState = GameState.GetWinnerId(),
+                scores = GameState.GetScores()
+            };
+
+            await BroadcastMessageToPlayersAsync(JsonConvert.SerializeObject(gameStateUpdate));
         }
 
         public async Task EndGameAsync()
         {
-            await BroadcastGameStateAsync("Game Over");
+            await BroadcastMessageToPlayersAsync("Game Over");
 
-            foreach(var player in PlayerClients)
+            foreach (var player in PlayerClients)
             {
                 await player.Value.CloseConnectionAsync();
             }
@@ -65,6 +66,14 @@ namespace HarleySocketService
         public ICollection<string> GetPlayerIds()
         {
             return PlayerClients.Keys;
+        }
+
+        private async Task BroadcastMessageToPlayersAsync(string message)
+        {
+            foreach (var player in PlayerClients)
+            {
+                await player.Value.SendMessageAsync(message);
+            }
         }
     }
 }
