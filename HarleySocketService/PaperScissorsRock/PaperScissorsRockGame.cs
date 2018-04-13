@@ -47,11 +47,13 @@ namespace HarleySocketService.PaperScissorsRock
 
             if(didPlayerOneWin && !didPlayerTwoWin)
             {
-                return "Winner: " + PlayerOne.Id;
+                PlayerOne.Score++;
+                return PlayerOne.Id;
             }
             else if(didPlayerTwoWin && !didPlayerOneWin)
             {
-                return "Winner: " + PlayerTwo.Id;
+                PlayerTwo.Score++;
+                return PlayerTwo.Id;
             }
 
             return "Error";
