@@ -39,9 +39,12 @@ namespace HarleySocketService
 
         public async Task CloseConnectionAsync()
         {
-            await ClientSocket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
-                    statusDescription: "Closed by the GameServer",
-                    cancellationToken: CancellationToken.None);
+            if(ClientSocket.State != WebSocketState.Closed)
+            {
+                await ClientSocket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
+                        statusDescription: "Closed by the GameServer",
+                        cancellationToken: CancellationToken.None);
+            }
         }
     }
 }

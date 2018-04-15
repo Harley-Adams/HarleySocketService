@@ -7,6 +7,7 @@ namespace HarleySocketService
 {
     public enum PlayerConnectionStateEnum
     {
+        Disconnected,
         Connected,
         Lobby,
         SearchingForGame,

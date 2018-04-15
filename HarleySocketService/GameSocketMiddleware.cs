@@ -90,6 +90,7 @@ namespace HarleySocketService
                     if (game != null)
                     {
                         await game.EndGameAsync();
+                        ActiveGames.Remove(game);
                     }
 
                     return;
