@@ -1,5 +1,5 @@
 ﻿using HarleySocketService.PaperScissorsRock;
-using HarleySocketService.PaperScissorsRock.wiremodels;
+using HarleySocketService.PaperScissorsRock.Wiremodels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;

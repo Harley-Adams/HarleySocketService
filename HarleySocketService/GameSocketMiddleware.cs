@@ -1,5 +1,5 @@
 ﻿using HarleySocketService.PaperScissorsRock;
-using HarleySocketService.PaperScissorsRock.wiremodels;
+using HarleySocketService.PaperScissorsRock.Wiremodels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
@@ -104,7 +104,7 @@ namespace HarleySocketService
                     return;
                 }
 
-                var bytesAsString = Encoding.UTF8.GetString(buffer);
+                var bytesAsString = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 var playerChoice = JsonConvert.DeserializeObject<PaperScissorsRockGameChoice>(bytesAsString);
 
                 game.RecievePlayerUpdate(userId, playerChoice.choice);

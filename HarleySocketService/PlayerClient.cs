@@ -11,12 +11,14 @@ namespace HarleySocketService
     public class PlayerClient
     {
         private WebSocket ClientSocket { get; set; }
+        private PlayerConnectionStateEnum ConnectionState { get; set; }
         private string Id;
 
         public PlayerClient(string id, WebSocket socket)
         {
             Id = id;
             ClientSocket = socket;
+            ConnectionState = PlayerConnectionStateEnum.Connected;
         }
 
         public string GetId()
