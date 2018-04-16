@@ -11,15 +11,46 @@ namespace HarleySocketService.PaperScissorsRock
         PaperScissorsRockPlayer PlayerOne;
         PaperScissorsRockPlayer PlayerTwo;
 
+        GameStateEnum GameState;
+        string WinnerId;
+
         public PaperScissorsRockGame(string playerOneId, string playerTwoId)
         {
             PlayerOne = new PaperScissorsRockPlayer() { Id = playerOneId };
             PlayerTwo = new PaperScissorsRockPlayer() { Id = playerTwoId };
+            GameState = GameStateEnum.InProgress;
+        }
+
+        public string GetWinnerId()
+        {
+            return WinnerId;
+        }
+
+        public GameStateEnum GetCurrentGameState()
+        {
+            return GameState;
+        }
+
+        public Dictionary<string, int> GetScores()
+        {
+            return new Dictionary<string, int>()
+            {
+                {PlayerOne.Id, PlayerOne.Score },
+                {PlayerTwo.Id, PlayerTwo.Score }
+            };
+        }
+
+        public void ResetGameState()
+        {
+            PlayerOne.HasPicked = false;
+            PlayerTwo.HasPicked = false;
+            WinnerId = null;
+            GameState = GameStateEnum.Lobby;
         }
 
         public void RecordMove(string playerId, PlayerChoiceEnum choice)
         {
-            if(playerId == PlayerOne.Id)
+            if (playerId == PlayerOne.Id)
             {
                 PlayerOne.Choice = choice;
                 PlayerOne.HasPicked = true;
@@ -31,16 +62,19 @@ namespace HarleySocketService.PaperScissorsRock
             }
         }
 
-        public string GetWinnerId()
+        public void UpdateGameState()
         {
             if(!PlayerOne.HasPicked || !PlayerTwo.HasPicked)
             {
-                return "InProgress";
+                GameState = GameStateEnum.InProgress;
+                return;
             }
 
             if(PlayerOne.Choice == PlayerTwo.Choice)
             {
-                return "Tie";
+                GameState = GameStateEnum.Complete;
+                WinnerId = "Tie";
+                return;
             }
 
             var didPlayerOneWin = DidPlayerWin(PlayerOne.Choice, PlayerTwo.Choice);
@@ -49,15 +83,22 @@ namespace HarleySocketService.PaperScissorsRock
             if(didPlayerOneWin && !didPlayerTwoWin)
             {
                 PlayerOne.Score++;
-                return PlayerOne.Id;
+                WinnerId = PlayerOne.Id;
+                GameState = GameStateEnum.Complete;
             }
             else if(didPlayerTwoWin && !didPlayerOneWin)
             {
                 PlayerTwo.Score++;
-                return PlayerTwo.Id;
+                GameState = GameStateEnum.Complete;
+                WinnerId = PlayerTwo.Id;
             }
 
-            return "Error";
+            return;
+        }
+
+        public void EndGame()
+        {
+            GameState = GameStateEnum.Complete;
         }
 
         private bool DidPlayerWin(PlayerChoiceEnum winChoice, PlayerChoiceEnum looseChoice)
@@ -76,21 +117,6 @@ namespace HarleySocketService.PaperScissorsRock
             }
 
             return false;
-        }
-
-        public Dictionary<string, int> GetScores()
-        {
-            return new Dictionary<string, int>()
-            {
-                {PlayerOne.Id, PlayerOne.Score },
-                {PlayerTwo.Id, PlayerTwo.Score }
-            };
-        }
-
-        public void ResetGameState()
-        {
-            PlayerOne.HasPicked = false;
-            PlayerTwo.HasPicked = false;
         }
     }
 }

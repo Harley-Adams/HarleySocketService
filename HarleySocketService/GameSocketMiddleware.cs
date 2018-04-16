@@ -40,6 +40,8 @@ namespace HarleySocketService
                 {
                     await game.EndGameAsync();
                 }
+                ActiveGames.Clear();
+
                 foreach (var player in WaitingPlayers)
                 {
                     await player.CloseConnectionAsync();
@@ -110,6 +112,8 @@ namespace HarleySocketService
 
                 game.RecievePlayerUpdate(userId, playerChoice.choice);
 
+                // calculate if winner and do shit
+
                 await game.UpdatePlayersWithGameState();
             });
         }
@@ -121,7 +125,9 @@ namespace HarleySocketService
             var gameStateUpdate = new PaperScissorsRockGameUpdate()
             {
                 timeStamp = DateTime.UtcNow.Ticks,
-                gameState = "lobby"
+                gameState = GameStateEnum.Lobby,
+                scores = { },
+                winnerId = null
             };
 
             await player.SendMessageAsync(JsonConvert.SerializeObject(gameStateUpdate));

@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 
@@ -38,6 +37,7 @@ namespace HarleySocketService
             if (found)
             {
                 GameState.RecordMove(id, Choice);
+                GameState.UpdateGameState();
             }
         }
 
@@ -46,8 +46,9 @@ namespace HarleySocketService
             var gameStateUpdate = new PaperScissorsRockGameUpdate()
             {
                 timeStamp = DateTime.UtcNow.Ticks,
-                gameState = GameState.GetWinnerId(),
-                scores = GameState.GetScores()
+                gameState = GameState.GetCurrentGameState(),
+                scores = GameState.GetScores(),
+                winnerId = GameState.GetWinnerId(),
             };
 
             await BroadcastMessageToPlayersAsync(JsonConvert.SerializeObject(gameStateUpdate));
@@ -55,12 +56,9 @@ namespace HarleySocketService
 
         public async Task EndGameAsync()
         {
-            await BroadcastMessageToPlayersAsync("Game Over");
+            GameState.EndGame();
 
-            foreach (var player in PlayerClients)
-            {
-                await player.Value.CloseConnectionAsync();
-            }
+            await UpdatePlayersWithGameState();
         }
 
         public ICollection<string> GetPlayerIds()
