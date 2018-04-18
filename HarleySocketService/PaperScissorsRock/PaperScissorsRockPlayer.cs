@@ -10,7 +10,7 @@ namespace HarleySocketService.PaperScissorsRock
     {
         public string Id { get; set; }
         public int Score { get; set; }
-        public PlayerChoiceEnum Choice { get; set; }
+        public PaperScissorsRockPlayerChoiceEnum Choice { get; set; }
         public bool HasPicked { get; set; }
     }
 }

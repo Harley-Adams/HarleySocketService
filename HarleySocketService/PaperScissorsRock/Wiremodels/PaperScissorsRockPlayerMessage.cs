@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 namespace HarleySocketService.PaperScissorsRock.Wiremodels
 {
-    public enum PlayerChoiceEnum
+    public class PaperScissorsRockPlayerMessage
     {
-        Paper,
-        Scissors,
-        Rock
+        public PaperScissorsRockPlayerChoiceEnum choice { get; set; }
     }
 }

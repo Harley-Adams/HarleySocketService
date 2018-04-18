@@ -29,7 +29,7 @@ namespace HarleySocketService
             PlayerClients.TryAdd(id, player);
         }
 
-        public void RecievePlayerUpdate(string id, PlayerChoiceEnum Choice)
+        public void RecievePlayerUpdate(string id, PaperScissorsRockPlayerChoiceEnum Choice)
         {
             PlayerClient client;
             var found = PlayerClients.TryGetValue(id, out client);

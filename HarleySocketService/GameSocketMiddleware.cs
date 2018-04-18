@@ -108,11 +108,13 @@ namespace HarleySocketService
                 }
 
                 var bytesAsString = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                var playerChoice = JsonConvert.DeserializeObject<PaperScissorsRockGameChoice>(bytesAsString);
+                var playerMessage = JsonConvert.DeserializeObject<PlayerMessage>(bytesAsString);
 
-                game.RecievePlayerUpdate(userId, playerChoice.choice);
-
-                // calculate if winner and do shit
+                if(playerMessage.messageType == PlayerMessageTypeEnum.PaperScissorsRockChoice)
+                {
+                    var playerChoice = JsonConvert.DeserializeObject<PaperScissorsRockPlayerMessage>(bytesAsString);
+                    game.RecievePlayerUpdate(userId, playerChoice.choice);
+                }
 
                 await game.UpdatePlayersWithGameState();
             });

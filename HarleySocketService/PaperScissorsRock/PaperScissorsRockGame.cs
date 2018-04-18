@@ -48,7 +48,7 @@ namespace HarleySocketService.PaperScissorsRock
             GameState = GameStateEnum.Lobby;
         }
 
-        public void RecordMove(string playerId, PlayerChoiceEnum choice)
+        public void RecordMove(string playerId, PaperScissorsRockPlayerChoiceEnum choice)
         {
             if (playerId == PlayerOne.Id)
             {
@@ -101,17 +101,17 @@ namespace HarleySocketService.PaperScissorsRock
             GameState = GameStateEnum.Complete;
         }
 
-        private bool DidPlayerWin(PlayerChoiceEnum winChoice, PlayerChoiceEnum looseChoice)
+        private bool DidPlayerWin(PaperScissorsRockPlayerChoiceEnum winChoice, PaperScissorsRockPlayerChoiceEnum looseChoice)
         {
-            if(winChoice == PlayerChoiceEnum.Paper && looseChoice == PlayerChoiceEnum.Rock)
+            if(winChoice == PaperScissorsRockPlayerChoiceEnum.Paper && looseChoice == PaperScissorsRockPlayerChoiceEnum.Rock)
             {
                 return true;
             }
-            if (winChoice == PlayerChoiceEnum.Rock && looseChoice == PlayerChoiceEnum.Scissors)
+            if (winChoice == PaperScissorsRockPlayerChoiceEnum.Rock && looseChoice == PaperScissorsRockPlayerChoiceEnum.Scissors)
             {
                 return true;
             }
-            if (winChoice == PlayerChoiceEnum.Scissors && looseChoice == PlayerChoiceEnum.Paper)
+            if (winChoice == PaperScissorsRockPlayerChoiceEnum.Scissors && looseChoice == PaperScissorsRockPlayerChoiceEnum.Paper)
             {
                 return true;
             }

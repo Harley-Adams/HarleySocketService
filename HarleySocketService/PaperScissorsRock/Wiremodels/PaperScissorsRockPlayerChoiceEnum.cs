@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace HarleySocketService.PaperScissorsRock.Wiremodels
 {
-    public class PaperScissorsRockGameChoice
+    public enum PaperScissorsRockPlayerChoiceEnum
     {
-        public long timeStamp { get; set; }
-        public PlayerChoiceEnum choice { get; set; }
+        Paper,
+        Scissors,
+        Rock
     }
 }
