@@ -73,16 +73,6 @@ namespace HarleySocketService
             var socket = await context.WebSockets.AcceptWebSocketAsync();
             var playerClient = new PlayerClient(userId, socket);
 
-            if (WaitingPlayers.Count == 0)
-            {
-                await AddPlayerToWaitList(playerClient);
-            }
-            else
-            {
-                var otherPlayer = WaitingPlayers.FirstOrDefault();
-                await StartMatch(otherPlayer, playerClient);
-            }
-
             await Receive(socket, async (result, buffer) =>
             {
                 var game = ActiveGames.FirstOrDefault(g => g.GetPlayerIds().Contains(userId));
@@ -98,26 +88,50 @@ namespace HarleySocketService
                     return;
                 }
 
-                if (game == null)
-                {
-                    if (!WaitingPlayers.Contains(playerClient))
-                    {
-                        WaitingPlayers.Add(playerClient);
-                    }
-                    return;
-                }
-
                 var bytesAsString = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 var playerMessage = JsonConvert.DeserializeObject<PlayerMessage>(bytesAsString);
 
                 if(playerMessage.messageType == PlayerMessageTypeEnum.PaperScissorsRockChoice)
                 {
+                    //Player sent choice message but not in game
+                    if(game == null)
+                    {
+                        return;
+                    }
+
                     var playerChoice = JsonConvert.DeserializeObject<PaperScissorsRockPlayerMessage>(bytesAsString);
                     game.RecievePlayerUpdate(userId, playerChoice.choice);
+
+                    await game.UpdatePlayersWithGameState();
+
+                    if(game.IsGameComplete())
+                    {
+                        ActiveGames.Remove(game);
+                    }
                 }
 
-                await game.UpdatePlayersWithGameState();
+                if (playerMessage.messageType == PlayerMessageTypeEnum.PaperScissorsRockQueueUp)
+                {
+                    await FindGame(playerClient);
+                }
+
             });
+        }
+
+        private async Task FindGame(PlayerClient playerClient)
+        {
+            if (WaitingPlayers.Count == 0)
+            {
+                if (!WaitingPlayers.Contains(playerClient))
+                {
+                    await AddPlayerToWaitList(playerClient);
+                }
+            }
+            else
+            {
+                var otherPlayer = WaitingPlayers.FirstOrDefault();
+                await StartMatch(otherPlayer, playerClient);
+            }
         }
 
         private async Task AddPlayerToWaitList(PlayerClient player)

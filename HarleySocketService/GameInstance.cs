@@ -61,6 +61,11 @@ namespace HarleySocketService
             await UpdatePlayersWithGameState();
         }
 
+        public bool IsGameComplete()
+        {
+            return GameState.GetCurrentGameState() == GameStateEnum.Complete;
+        }
+
         public ICollection<string> GetPlayerIds()
         {
             return PlayerClients.Keys;
