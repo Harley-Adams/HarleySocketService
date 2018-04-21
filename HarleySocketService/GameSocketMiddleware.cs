@@ -16,13 +16,13 @@ namespace HarleySocketService
     public class GameSocketMiddleware
     {
         private readonly RequestDelegate Next;
-        private readonly List<GameInstance> ActiveGames;
+        private readonly List<IGameInstance> ActiveGames;
         private readonly List<PlayerClient> WaitingPlayers;
 
         public GameSocketMiddleware(RequestDelegate next)
         {
             Next = next;
-            ActiveGames = new List<GameInstance>();
+            ActiveGames = new List<IGameInstance>();
             WaitingPlayers = new List<PlayerClient>();
         }
 
@@ -99,8 +99,8 @@ namespace HarleySocketService
                         return;
                     }
 
-                    var playerChoice = JsonConvert.DeserializeObject<PaperScissorsRockPlayerMessage>(bytesAsString);
-                    game.RecievePlayerUpdate(userId, playerChoice.choice);
+                    var playerChoice = JsonConvert.DeserializeObject<PaperScissorsRockPlayerMessage>(playerMessage.messageBody);
+                    game.RecievePlayerUpdate(userId, playerMessage.messageBody);
 
                     await game.UpdatePlayersWithGameState();
 

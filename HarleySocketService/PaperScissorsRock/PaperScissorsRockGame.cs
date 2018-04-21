@@ -89,8 +89,8 @@ namespace HarleySocketService.PaperScissorsRock
             else if(didPlayerTwoWin && !didPlayerOneWin)
             {
                 PlayerTwo.Score++;
-                GameState = GameStateEnum.Complete;
                 WinnerId = PlayerTwo.Id;
+                GameState = GameStateEnum.Complete;
             }
 
             return;

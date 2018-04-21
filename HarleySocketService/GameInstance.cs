@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HarleySocketService
 {
-    public class GameInstance
+    public class GameInstance : IGameInstance
     {
         private ConcurrentDictionary<string, PlayerClient> PlayerClients = new ConcurrentDictionary<string, PlayerClient>();
 
@@ -29,14 +29,15 @@ namespace HarleySocketService
             PlayerClients.TryAdd(id, player);
         }
 
-        public void RecievePlayerUpdate(string id, PaperScissorsRockPlayerChoiceEnum Choice)
+        public void RecievePlayerUpdate(string id, string playerMessage)
         {
             PlayerClient client;
             var found = PlayerClients.TryGetValue(id, out client);
 
             if (found)
             {
-                GameState.RecordMove(id, Choice);
+                var playerChoice = JsonConvert.DeserializeObject<PaperScissorsRockPlayerMessage>(playerMessage);
+                GameState.RecordMove(id, playerChoice.choice);
                 GameState.UpdateGameState();
             }
         }
