@@ -8,7 +8,6 @@ namespace HarleySocketService
 {
     interface IGameInstance
     {
-        void AddPlayer(string id, WebSocket webSocket);
         void RecievePlayerUpdate(string id, string playerMessage);
         Task UpdatePlayersWithGameState();
         Task EndGameAsync();

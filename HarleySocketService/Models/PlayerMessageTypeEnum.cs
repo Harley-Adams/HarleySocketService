@@ -1,4 +1,4 @@
-﻿namespace HarleySocketService
+﻿namespace HarleySocketService.Models
 {
     public enum PlayerMessageTypeEnum
     {

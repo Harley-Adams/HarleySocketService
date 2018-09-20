@@ -1,4 +1,5 @@
-﻿using HarleySocketService.PaperScissorsRock.Wiremodels;
+﻿using HarleySocketService.Models;
+using HarleySocketService.PaperScissorsRock.Wiremodels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

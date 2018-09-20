@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="RealEstateCartel\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

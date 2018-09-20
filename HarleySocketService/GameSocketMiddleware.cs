@@ -1,4 +1,5 @@
-﻿using HarleySocketService.PaperScissorsRock;
+﻿using HarleySocketService.Models;
+using HarleySocketService.PaperScissorsRock;
 using HarleySocketService.PaperScissorsRock.Wiremodels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;

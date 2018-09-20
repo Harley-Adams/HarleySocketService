@@ -1,4 +1,5 @@
-﻿using HarleySocketService.PaperScissorsRock;
+﻿using HarleySocketService.Models;
+using HarleySocketService.PaperScissorsRock;
 using HarleySocketService.PaperScissorsRock.Wiremodels;
 using Newtonsoft.Json;
 using System;
@@ -21,12 +22,6 @@ namespace HarleySocketService
             PlayerClients = new ConcurrentDictionary<string, PlayerClient>();
             PlayerClients.TryAdd(playerOne.GetId(), playerOne);
             PlayerClients.TryAdd(playerTwo.GetId(), playerTwo);
-        }
-
-        public void AddPlayer(string id, WebSocket webSocket)
-        {
-            var player = new PlayerClient(id, webSocket);
-            PlayerClients.TryAdd(id, player);
         }
 
         public void RecievePlayerUpdate(string id, string playerMessage)
