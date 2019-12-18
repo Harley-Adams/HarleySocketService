@@ -152,6 +152,17 @@ namespace HarleySocketService
 
         private async Task StartMatch(PlayerClient playerOne, PlayerClient playerTwo)
         {
+            try
+            {
+                var playfabManager = new PlayfabManager();
+                await playfabManager.LoginAsync(playerOne.GetId());
+                await playfabManager.LoginAsync(playerTwo.GetId());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
             var newGame = new GameInstance(playerOne, playerTwo);
             WaitingPlayers.Remove(playerOne);
 
